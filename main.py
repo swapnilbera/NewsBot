@@ -32,7 +32,7 @@ process_url_clicked = st.sidebar.button("Process URLs")
 file_path = "faiss_store_cohere.index"  # Change file extension to .index
 
 main_placeholder = st.empty()
-llm = Cohere(temperature=0.9, max_tokens=500)
+llm = Cohere(temperature=0, max_tokens=500)
 
 # Define embeddings outside the if block
 embeddings = CohereEmbeddings(
@@ -74,18 +74,17 @@ if query:
         vectorstore = FAISS.load_local(
             file_path,
             embeddings,
-            allow_dangerous_deserialization=True  # Add this line
+            allow_dangerous_deserialization=True 
         )
         chain = RetrievalQAWithSourcesChain.from_llm(llm=llm, retriever=vectorstore.as_retriever())
         result = chain({"question": query}, return_only_outputs=True)
-        
-        # Result will be a dictionary of this format --> {"answer": "", "sources": [] }
-        st.header("Answer")
-        st.write(result["answer"])
 
         # Display sources, if available
         sources = result.get("sources", "")
         if sources:
+            # Result will be a dictionary of this format --> {"answer": "", "sources": [] }
+            st.header("Answer")
+            st.write(result["answer"])
             st.subheader("Sources:")
             # Extract source URLs from the metadata
             source_urls = set()
@@ -95,3 +94,6 @@ if query:
             # Display the source URLs
             for url in source_urls:
                 st.write(url)
+        else:
+            st.write("Result is not available in the given links.Try to provide another links.Thank you!")
+
