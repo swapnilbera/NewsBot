@@ -9,7 +9,16 @@ from langchain_community.embeddings import CohereEmbeddings
 from langchain.vectorstores import FAISS
 from dotenv import load_dotenv
 
-load_dotenv()  # Take environment variables from .env
+# Load environment variables from .env file
+load_dotenv()
+
+# Retrieve the Cohere API key from the environment
+COHERE_API_KEY = os.getenv("COHERE_API_KEY")
+
+# Check if the API key is loaded correctly
+if not COHERE_API_KEY:
+    st.error("Cohere API key not found. Please check your .env file.")
+    st.stop()
 
 st.title("NewsBot: News Research Tool 📈")
 st.sidebar.title("News Article URLs")
@@ -27,8 +36,8 @@ llm = Cohere(temperature=0.9, max_tokens=500)
 
 # Define embeddings outside the if block
 embeddings = CohereEmbeddings(
-    cohere_api_key="6CM338B6WfQkasvpz27LDq8ZPGI1flFdqI7U4EEw",
-    user_agent="langchain-app"  # Add this line
+    cohere_api_key=COHERE_API_KEY,  # Use the API key loaded from .env
+    user_agent="langchain-app" 
 )
 
 if process_url_clicked:
